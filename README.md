@@ -4,7 +4,7 @@
   
 liancheng.py是Python爬虫文件；
 
-data_cleaning是清洗文件；
+data_cleaning.scala是清洗文件；
 
 Flask_web文件夹下，app.py是启动入口，model.py是数据库连接模型，templates文件夹下的HTML文件都是页面；
 
