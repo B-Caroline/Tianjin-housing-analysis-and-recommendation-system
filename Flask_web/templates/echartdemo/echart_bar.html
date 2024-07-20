@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>柱状图示例</title>
+    <script src="../../static/js/echarts.min.js"></script>
+</head>
+<body>
+  <div style="width: 600px;height: 400px"></div>
+  <script>
+        //初始化echarts实例对象，找到div元素作为参数放入方法中（放在div标签的下方）
+        const myCharts = echarts.init(document.querySelector('div'), 'dark');
+        const xdata = ['张三', '李四', '王五', '小明', '小华'];
+        const ydata01 = [70, 87, 66, 77, 95];
+        const ydata02 = [55, 77, 86, 69, 91];
+        //准备配置项
+        const option = {
+            title: {
+                text: '成绩',
+                textStyle: {  //文字样式
+                    color: 'red'
+                },
+                borderWidth: 2,  //标题边框
+                borderColor: 'red',
+                borderRadius: 2,
+                left: 50,
+                top: 10
+            },
+            animationDuration: function (arg){
+                console.log(arg)
+                return 1000 * arg
+            },  //动画时长
+            dataZoom: [
+                {
+                    type: 'slider',  //滑轮缩放，inside：鼠标滚轮缩放
+                    xAxisIndex: 0  //指明x轴
+                },
+                {
+                    type: 'slider',  //滑轮缩放，inside：鼠标滚轮缩放
+                    yAxisIndex: 0
+                }
+            ],  //区域缩放
+            tooltip: {
+                trigger: 'axis',//触发类型
+                triggerOn: 'click',//触发时机
+                formatter: '{b}的成绩是{c}'//提示框内容
+            },  //提示框组件
+            toolbox: {
+                feature: {
+                    saveAsImage: {},  //导出下载图片
+                    dataView: {},  //数据原始视图
+                    restore: {}, //重置
+                    dataZoom: {},  //区域缩放
+                    magicType: {  //动态图表类型切换
+                        type: ['bar', 'line']
+                    }
+                }
+            },  //通用工具栏
+            legend: {
+                data: ['语文成绩', '数学成绩']
+            },  //图例筛选，与series中的name对应
+            xAxis: {
+                type: 'category',
+                data: xdata
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '语文成绩',
+                    type: 'bar',  //柱状图
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max', name: '最大值'
+                            }, {
+                                type: 'min', name: '最小值'
+                            }
+                        ]
+                    },  //标记点，最值
+                    markLine: {
+                        data: [
+                            {
+                                type: 'average', name: '平均值'
+                            }
+                        ]
+                    },  //标记平均值
+                    label: {
+                        show: true,
+                        rotate: 60, //旋转
+                        position: 'top'  //显示位置
+                    },  //显示
+                    barWidth: '30%',
+                    data: ydata01
+                },
+                {
+                    name: '数学成绩',
+                    type: 'bar',
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max', name: '最大值'
+                            }, {
+                                type: 'min', name: '最小值'
+                            }
+                        ]
+                    },  //标记点，最值
+                    markLine: {
+                        data: [
+                            {
+                                type: 'average', name: '平均值'
+                            }
+                        ]
+                    },  //标记平均值
+                    label: {
+                        show: true,
+                        rotate: 60, //旋转
+                        position: 'top'  //显示位置
+                    },  //显示
+                    data: ydata02,
+                    barWidth: '30%'
+                }
+            ]
+        };
+        //将配置项设置给实例对象
+        myCharts.setOption(option)
+  </script>
+</body>
+</html>

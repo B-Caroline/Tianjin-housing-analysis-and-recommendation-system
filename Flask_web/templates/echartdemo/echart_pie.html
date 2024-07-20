@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>饼图</title>
+    <script src="../../static/js/echarts.min.js"></script>
+</head>
+<body>
+  <div style="width: 600px;height: 400px"></div>
+  <script>
+      const myCharts = echarts.init(document.querySelector('div'));
+      const pieData = [
+          {
+              name: '淘宝',
+              value: 2745
+          },
+          {
+              name: '京东',
+              value: 2545
+          },
+          {
+              name: '唯品会',
+              value: 3045
+          },
+          {
+              name: '1号店',
+              value: 3345
+          },
+          {
+              name: '优衣',
+              value: 2986
+          }
+      ]
+      const option = {
+          series: [
+              {
+                  type: 'pie',
+                  data: pieData,
+                  label: {
+                      show: true,
+                      formatter: function (arg){
+                          return arg.name + '平台' + arg.value + '元\n' + arg.percent + '%'
+                      }
+                  },  // 显示数据
+                  // radius:半径
+                  // radius:['50%','70%']内圆外圆
+                  roseType: 'radius',  //南丁格尔图，半径随比例变化
+                  selectedMode: 'single',  //选中效果，multiple：选中多个偏离
+                  selectedOffset: 10,  //选中偏离量
+              }
+          ]
+      }
+      myCharts.setOption(option)
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <link href="../static/css/menu_style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ======= Header ======= -->
+    <div class="header w">
+        <!--logo部分-->
+        <div class="logo">
+            <img src="../static/img/course03.png" alt="">
+        </div>
+        <!--导航栏部分-->
+        <div class="nav">
+            <ul>
+                <li><a href="{{ url_for('menu') }}">主页</a></li>
+                <li><a href="{{ url_for('house_all') }}">查看全部租赁信息</a></li>
+                <li class="main-title3">天津市房屋租赁信息展示平台</li>
+            </ul>
+        </div>
+    </div><!-- End Header -->
+
+<!-- ======= Main Section ======= -->
+   <div class="banner">
+       <div class="w">
+           <div class="subnav">
+               <ul>
+                   <li><a href="{{ url_for('region_price') }}">&gt;&nbsp;地区租金统计</a></li>
+                   <li><a href="{{ url_for('region_price02') }}">&gt;&nbsp;地区&租金箱线图</a></li>
+                   <li><a href="{{ url_for('region_price_area') }}">&gt;&nbsp;地区&租金&面积整合</a></li>
+                   <li><a href="{{ url_for('area_price') }}">&gt;&nbsp;租金&面积统计</a></li>
+               </ul>
+               <ul class="button0"></ul>
+           </div>
+           <div class="container">
+               <div class="main-title">
+                   <h2>房屋租赁信息数据分析和可视化</h2>
+               </div>
+               <div>
+                   <p>——基于Python爬虫、Flask框架、Echarts等技术实现</p>
+               </div>
+               <div class="bg-section">
+                   <div>
+                       <ul class="button1"></ul>
+                       <ul><a href="{{ url_for('region_sum') }}">地区与房源数量</a></ul>
+                   </div>
+                   <div>
+                       <ul class="button2"></ul>
+                       <ul><a href="{{ url_for('region_average_price') }}">地区与平均租金</a></ul>
+                   </div>
+                   <div>
+                       <ul class="button3"></ul>
+                       <ul><a href="{{ url_for('type_sum') }}">房源户型统计</a></ul>
+                   </div>
+                   <div>
+                       <ul class="button4"></ul>
+                       <ul><a href="{{ url_for('area_sum') }}">房源面积统计</a></ul>
+                   </div>
+                   <div>
+                       <ul class="button5"></ul>
+                       <ul><a href="{{ url_for('price_sum') }}">房源租金统计</a></ul>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div><!-- End Section -->
+
+<!-- ======= Footer ======= -->
+   <div class="footer">
+       <div>
+            © B-
+           <strong>Caroline</strong>
+       </div>
+   </div><!-- End Footer -->
+</body>
+</html>

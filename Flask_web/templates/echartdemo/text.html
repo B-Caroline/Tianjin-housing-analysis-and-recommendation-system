@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts 箱线图示例</title>
+    <!-- 引入 ECharts 文件 -->
+    <script src="../../static/js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 图表容器 -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        let data = [
+    [850, 740, 900, 1670, 930, 850, 950, 980, 980, 880, 1000, 980, 930, 650, 760, 810, 1000, 1000, 960, 960],
+    [960, 940, 960, 940, 880, 800, 850, 880, 1900, 840, 830, 790, 810, 880, 880, 830, 800, 790, 760, 800],
+    [880, 880, 880, 860, 720, 720, 620, 860, 2970, 950, 880, 910, 850, 870, 840, 840, 850, 840, 840, 840]
+];
+
+function calculateQuartiles(arr) {
+    arr.sort((a, b) => a - b);
+    const n = arr.length;
+
+    const quartile = (index) => {
+        const i = (n - 1) * index;
+        const lower = Math.floor(i);
+        const upper = lower + 1;
+        const weight = i - lower;
+        return arr[lower] * (1 - weight) + arr[upper] * weight;
+    };
+
+    return [
+        arr[0], // 最小值
+        quartile(0.25), // 第一四分位数（25%分位数）
+        quartile(0.5), // 中位数（50%分位数）
+        quartile(0.75), // 第三四分位数（75%分位数）
+        arr[n - 1] // 最大值
+    ];
+}
+
+const statistics = data.map(calculateQuartiles);
+
+
+
+        // 指定图表的配置项和数据
+        var option = {
+            tooltip: {
+                trigger: 'item',
+            },
+            xAxis: {
+                type: 'category',
+                data: ['a', 'b', 'c']
+            },
+            yAxis: {
+                type: 'value',
+                splitArea: {
+                    show: true
+                },
+            },
+            series: [{
+                name: '箱线图',
+                type: 'boxplot',
+                data: statistics
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        console.log(statistics);
+        console.log(data)
+    </script>
+</body>
+</html>

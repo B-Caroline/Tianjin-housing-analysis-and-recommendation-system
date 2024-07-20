@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>折线图</title>
+    <script src="../../static/js/echarts.min.js"></script>
+</head>
+<body>
+  <div style="width: 600px;height: 400px"></div>
+   <script>
+       const myCharts = echarts.init(document.querySelector('div'));
+       const xdata = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月'];
+       const ydata01 = [3788,3244, 2333, 1900, 2456, 2656, 3445, 2876, 1777, 1567];
+       const ydata02 = [3988,3544, 3333, 2900, 2336, 2556, 3145, 2676, 1977, 1267];
+       const option = {
+           xAxis: {
+                type: 'category',
+                data: xdata,
+               boundaryGap: false  //紧挨着边缘
+            },
+            yAxis: {
+                type: 'value',
+                scale: true  //脱离0值比例，防止数据差距小变成直线
+            },
+           series: [
+               {
+                   name: '康师傅',
+                   type: 'line',
+                   markPoint: {
+                        data: [
+                            {
+                                type: 'max', name: '最大值'
+                            }, {
+                                type: 'min', name: '最小值'
+                            }
+                        ]
+                    },  //标记点，最值
+                   markLine: {
+                        data: [
+                            {
+                                type: 'average', name: '平均值'
+                            }
+                        ]
+                    },  //标记平均值
+                   markArea: {
+                       data: [
+                           [
+                               {xAxis: '1月'},
+                               {xAxis: '2月'}
+                           ],
+                           [
+                               {xAxis: '6月'},
+                               {xAxis: '8月'}
+                           ]
+                       ]
+                   },  //标注区间
+                   label: {
+                        show: true,
+                        position: 'top'  //显示位置
+                    },  //显示
+                   smooth: true,  //平滑曲线
+                   lineStyle: {
+                       color: 'blue',
+                       type: 'dashed'  //虚线，dotted：点段；solid：实线
+                   },  //曲线样式
+                   areaStyle: {
+                       color: 'blue'
+                   },  //填充
+                   stack: 'all',  //堆叠
+                   data: ydata01
+               },
+               {name: '统一',
+                   type: 'line',
+                   markPoint: {
+                        data: [
+                            {
+                                type: 'max', name: '最大值'
+                            }, {
+                                type: 'min', name: '最小值'
+                            }
+                        ]
+                    },  //标记点，最值
+                   markLine: {
+                        data: [
+                            {
+                                type: 'average', name: '平均值'
+                            }
+                        ]
+                    },  //标记平均值
+                   markArea: {
+                       data: [
+                           [
+                               {xAxis: '3月'},
+                               {xAxis: '4月'}
+                           ],
+                           [
+                               {xAxis: '9月'},
+                               {xAxis: '10月'}
+                           ]
+                       ]
+                   },  //标注区间
+                   label: {
+                        show: true,
+                        position: 'top'  //显示位置
+                    },  //显示
+                   smooth: true,  //平滑曲线
+                   lineStyle: {
+                       color: 'red',
+                       type: 'dashed'  //虚线，dotted：点段；solid：实线
+                   },  //曲线样式
+                   areaStyle: {
+                       color: 'red'
+                   },  //填充
+                   stack: 'all',
+                   data: ydata02}
+           ]
+       }
+       myCharts.setOption(option)
+   </script>
+</body>
+</html>

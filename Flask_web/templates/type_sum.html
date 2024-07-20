@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>房屋户型统计</title>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 柱状图容器 -->
+    <div id="barchart" style="width: 100%; height: 535px;"></div>
+    <!-- 饼图容器 -->
+    <div id="pieChart" style="width: 100%; height: 535px;"></div>
+    <script type="text/javascript">
+        const barChart = echarts.init(document.getElementById('barchart'));
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        let types = {{ types|tojson|safe }};
+
+        // 统计数组中各个户型的出现频率
+        const frequency_type = {};
+        types.forEach(
+            function(element) {
+                // 如果元素在频率映射中已存在，则增加计数；否则，将其初始化为1
+                if (frequency_type[element]) {
+                    frequency_type[element]++;
+                } else {
+                    frequency_type[element] = 1;
+                }
+            }
+        )
+
+        // 柱状图配置项
+        const barChartOptions = {
+            title: {
+                text: '户型数量分布关系柱状图'
+            },
+            animationDuration: function (arg) {
+                console.log(arg)
+                return 400 * arg
+            },  //动画时长
+            dataZoom: [
+                {
+                    type: 'slider',  //滑轮缩放，inside：鼠标滚轮缩放
+                    xAxisIndex: 0  //指明x轴
+                },
+                {
+                    type: 'slider',
+                    yAxisIndex: 0
+                }
+            ],  //区域缩放
+            tooltip: {
+                trigger: 'axis',//触发类型
+                triggerOn: 'click',//触发时机
+                formatter: '户型为{b}的房源有{c}套'//提示框内容
+            },  //提示框组件
+            toolbox: {
+                feature: {
+                    saveAsImage: {},  //导出下载图片
+                    dataView: {},  //数据原始视图
+                    restore: {}, //重置
+                    dataZoom: {},  //区域缩放
+                    magicType: {  //动态图表类型切换
+                        type: ['bar', 'line']
+                    }
+                }
+            },  //通用工具栏
+            xAxis: {
+                type: 'category',
+                name: '户型(型)',
+                data: Object.keys(frequency_type),
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '数量(套)'
+            },
+            series: [
+                {
+                    data: Object.values(frequency_type),
+                    type: 'bar',
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max', name: '最多'
+                            }, {
+                                type: 'min', name: '最少'
+                            }
+                        ]
+                    },  //标记点，最值
+                    label: {
+                        show: true,
+                        rotate: 20, //旋转
+                        position: 'top'  //显示位置
+                    },  //显示
+                    barWidth: '50%',
+                }
+            ]
+        };
+
+        // 饼图配置项
+        const pieChartOptions = {
+            title: {
+                text: '户型数量分布关系饼图'
+            },
+            series: [
+                {
+                    type: 'pie',
+                    data: Object.entries(frequency_type).map(([name, value]) => ({ name, value })),
+                    label: {
+                        show: true,
+                        formatter: function (arg) {
+                            return '户型为“' + arg.name + '”的房源共计' + arg.value + '套\n' + arg.percent + '%'
+                        }
+                    }, // 显示数据
+                    selectedMode: 'single',  //选中效果
+                    selectedOffset: 10,  //选中偏离量
+                }
+            ]
+        }
+
+        barChart.setOption(barChartOptions);
+        pieChart.setOption(pieChartOptions);
+    </script>
+</body>
+</html>

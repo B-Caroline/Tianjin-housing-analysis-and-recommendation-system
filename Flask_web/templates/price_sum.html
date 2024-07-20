@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>房屋租金统计</title>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 柱状图容器 -->
+    <div id="barchart" style="width: 100%; height: 535px;"></div>
+    <!-- 饼图容器 -->
+    <div id="pieChart" style="width: 100%; height: 535px;"></div>
+    <script type="text/javascript">
+        const barChart = echarts.init(document.getElementById('barchart'));
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        let prices = {{ prices|tojson|safe }};
+
+        const frequency_price = {
+            '<1000':0,
+            '1000-1500':0,
+            '1500-2000':0,
+            '2000-2500':0,
+            '2500-3000':0,
+            '3000-3500':0,
+            '3500-4000':0,
+            '>4000':0
+        };
+        //统计各个价格区间的频率
+        prices.forEach(
+            function(element) {
+                if (element <= 1000) {
+                    frequency_price['<1000']++;
+                }else if (element > 1000 && element <= 1500) {
+                    frequency_price['1000-1500']++;
+                }else if (element > 1500 && element <= 2000) {
+                    frequency_price['1500-2000']++;
+                }else if (element > 2000 && element <= 2500) {
+                    frequency_price['2000-2500']++;
+                }else if (element > 2500 && element <= 3000) {
+                    frequency_price['2500-3000']++;
+                }else if (element > 3000 && element <= 3500) {
+                    frequency_price['3000-3500']++;
+                }else if (element > 3500 && element <= 4000) {
+                    frequency_price['3500-4000']++;
+                }else {
+                    frequency_price['>4000']++;
+                }
+            }
+        )
+
+        // 将频率统计对象转换为数组
+        const frequencyArray = Object.keys(frequency_price).map(function (key) {
+            return frequency_price[key];
+        });
+
+        // 柱状图配置项
+        const barChartOptions = {
+            title: {
+                text: '房屋租金统计柱状图'
+            },
+            animationDuration: function (arg) {
+                console.log(arg)
+                return 400 * arg
+            },  //动画时长
+            dataZoom: [
+                {
+                    type: 'slider',  //滑轮缩放，inside：鼠标滚轮缩放
+                    xAxisIndex: 0  //指明x轴
+                },
+                {
+                    type: 'slider',
+                    yAxisIndex: 0
+                }
+            ],  //区域缩放
+            tooltip: {
+                trigger: 'axis',//触发类型
+                triggerOn: 'click',//触发时机
+                formatter: '租金在“{b}元”区间内的房源有{c}套'//提示框内容
+            },  //提示框组件
+            toolbox: {
+                feature: {
+                    saveAsImage: {},  //导出下载图片
+                    dataView: {},  //数据原始视图
+                    restore: {}, //重置
+                    dataZoom: {},  //区域缩放
+                    magicType: {  //动态图表类型切换
+                        type: ['bar', 'line']
+                    }
+                }
+            },  //通用工具栏
+            xAxis: {
+                type: 'category',
+                name: '租金(元)',
+                data: Object.keys(frequency_price),
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '数量(套)'
+            },
+            series: [
+                {
+                    data: Object.values(frequencyArray),
+                    type: 'bar',
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max'
+                            }, {
+                                type: 'min'
+                            }
+                        ]
+                    },  //标记点，最值
+                    label: {
+                        show: true,
+                        rotate: 20, //旋转
+                        position: 'top'  //显示位置
+                    },  //显示
+                    barWidth: '50%',
+                }
+            ]
+        };
+
+        // 饼图配置项
+        const pieChartOptions = {
+            title: {
+                text: '房屋租金统计饼图'
+            },
+            series: [
+                {
+                    type: 'pie',
+                    data: [
+                        { value: frequencyArray[0], name: '<1000' },
+                        { value: frequencyArray[1], name: '1000-1500' },
+                        { value: frequencyArray[2], name: '1500-2000' },
+                        { value: frequencyArray[3], name: '2000-2500' },
+                        { value: frequencyArray[4], name: '2500-3000' },
+                        { value: frequencyArray[5], name: '3000-3500' },
+                        { value: frequencyArray[6], name: '3500-4000' },
+                        { value: frequencyArray[7], name: '>4000' },
+                    ],
+                    label: {
+                        show: true,
+                        formatter: function (arg) {
+                            return '租金在“' + arg.name + '元”区间内的房源共计' + arg.value + '套\n' + arg.percent + '%'
+                        }
+                    }, // 显示数据
+                    selectedMode: 'single',  //选中效果
+                    selectedOffset: 10,  //选中偏离量
+                }
+            ]
+        }
+
+        barChart.setOption(barChartOptions);
+        pieChart.setOption(pieChartOptions);
+    </script>
+</body>
+</html>

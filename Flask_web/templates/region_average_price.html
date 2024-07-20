@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>不同地区的平均房价</title>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 折线图容器 -->
+    <div id="linechart" style="width: 100%; height: 500px;"></div>
+
+    <script type="text/javascript">
+        let regions = {{ regions|tojson|safe }};
+        let prices = {{ prices|tojson|safe }};
+
+        // 合并数组
+        const mergedData = {};
+        regions.forEach(
+            (location, index) => {
+                if (!mergedData[location]) {
+                mergedData[location] = [];
+                }
+                mergedData[location].push(prices[index]);
+            }
+        )
+
+        // 计算平均值
+        const averagePrice = {};  //获取健的数组，对其进行遍历
+        Object.keys(mergedData).forEach(
+            location => {
+                const region = mergedData[location];  //获取数值的数组
+                averagePrice[location] = Math.round(
+                    region.reduce(
+                        (sum, value) => sum + value, 0) / region.length
+                );  //对数值数组进行累加，然后除以数组长度
+            }
+        );
+
+        const lineChart = echarts.init(document.getElementById('linechart'));
+        const option = {
+            title: {
+                text: '不同地区的平均房价折线图'
+            },
+           xAxis: {
+               type: 'category',
+               name: '地区(区)',
+               data: Object.keys(averagePrice),
+               boundaryGap: false,  //紧挨着边缘
+            },
+            yAxis: {
+                type: 'value',
+                name: '租金(元)',
+                scale: true  //脱离0值比例，防止数据差距小变成直线
+            },
+            tooltip: {
+                trigger: 'axis',//触发类型
+                triggerOn: 'click',//触发时机
+                axisPointer: {
+                    type: 'cross'
+                },  //准星指示器
+                formatter: '{b}区的平均房价为{c}元'//提示框内容
+            },  //提示框组件
+           series: [
+               {
+                   name: '地区与平均房价',
+                   type: 'line',
+                   markPoint: {
+                        data: [
+                            {
+                                type: 'max', name: '最高价'
+                            }, {
+                                type: 'min', name: '最低价'
+                            }
+                        ]
+                    },  //标记点，最值
+                   markLine: {
+                        data: [
+                            {
+                                type: 'average', name: '总体平均价'
+                            }
+                        ]
+                    },  //标记平均值
+                   label: {
+                        show: true,
+                        position: 'top'  //显示位置
+                    },  //显示
+                   smooth: true,  //平滑曲线
+                   lineStyle: {
+                       color: 'red',
+                       type: 'dashed'  //虚线，dotted：点段；solid：实线
+                   },  //曲线样式
+                   areaStyle: {
+                       color: 'pink'
+                   },  //填充
+                   stack: 'all',  //堆叠
+                   data: Object.values(averagePrice)
+               },
+           ]
+       }
+        lineChart.setOption(option)
+    </script>
+</body>

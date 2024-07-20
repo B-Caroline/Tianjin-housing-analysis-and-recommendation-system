@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>地区、租金与面积整合统计</title>
+    <script src="../static/js/http_cdn.jsdelivr.net_npm_echarts_dist_echarts.js"></script>
+    <script src="../static/js/http_cdn.jsdelivr.net_npm_echarts-gl_dist_echarts-gl.js"></script>
+</head>
+<body>
+<div id="chart" style="width: 100%; height: 525px;"></div>
+<script>
+    const chartDom = document.getElementById('chart');
+    const myChart = echarts.init(chartDom);
+    let regions = {{ regions|tojson|safe }};
+    let prices = {{ prices|tojson|safe }};
+    let areas = {{ areas|tojson|safe }};
+
+    //合并成二维数组
+    let data = [];
+    for (let i = 0; i < regions.length; i ++){
+        data.push([regions[i], areas[i], prices[i]])
+    }
+
+    //集合，去除重复值，保证坐标轴上的值仅出现一次
+    const region_array = [...new Set(regions)]
+    const area_array = [...new Set(areas)]
+
+    const option = {
+        title: [
+            {
+                text: '地区、租金与面积整合统计'
+            },
+            {
+                text: '租金筛选(元)',
+                left: '1%',
+                top: '90%',
+                textStyle: {
+                    fontSize: 13,
+                    fontStyle: 'italic'
+                },
+            }
+        ],
+        tooltip: {
+            formatter: function (params){
+                return '地区: ' + params.value[0] + '<br/>' + '面积: ' + params.value[1] + '<br/>' + '租金: ' + params.value[2];
+            }
+        },
+        visualMap: {
+            type: 'continuous',
+            max: 46000,
+            inRange: {
+                color: [
+                    '#313695',
+                    '#4575b4',
+                    '#74add1',
+                    '#abd9e9',
+                    '#e0f3f8',
+                    '#ffffbf',
+                    '#fee090',
+                    '#fdae61',
+                    '#f46d43',
+                    '#d73027',
+                    '#a50026'
+      ]
+            },//渐变色
+            left: '3%',
+            top: '60%'
+        },
+        xAxis3D: {
+            type: 'category',
+            data: region_array,
+            name: '地区(区)'
+        },
+        yAxis3D: {
+            type: 'value',
+            data: area_array,
+            name: '面积 (m²)',
+            min: 0, // 设置 y 轴的最小值
+            max: 620, // 设置 y 轴的最大值
+            interval: 40 // 设置 y 轴刻度的间隔
+        },
+        zAxis3D: {
+            type: 'value',
+            name: '租金(元)',
+            min: 0,
+            max: 46000,
+            interval: 3000
+        },
+        grid3D: {
+            boxWidth: 200,
+            boxDepth: 130,
+            viewControl: {
+                // 初始视角
+                beta: 40,
+                alpha: 30
+            },
+        },
+        series: [
+            {
+                type: 'bar3D',
+                data: data,
+                barSize: 4, // 设置柱子的立方体体积大小
+                shading: 'lambert',
+                barGap: 0,
+                barCategoryGap: 0,
+                label: {
+                    fontSize: 16,
+                    borderWidth: 1
+                },
+                emphasis: {
+                    label: {
+                        fontSize: 20,
+                        color: 'red'
+                    },
+                    itemStyle: {
+                        color: 'red'
+                    }
+                }
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+</script>
+
+</body>

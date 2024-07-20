@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>房屋面积统计</title>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 柱状图容器 -->
+    <div id="barchart" style="width: 100%; height: 535px;"></div>
+    <!-- 饼图容器 -->
+    <div id="pieChart" style="width: 100%; height: 535px;"></div>
+    <script type="text/javascript">
+        const barChart = echarts.init(document.getElementById('barchart'));
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        let areas = {{ areas|tojson|safe }};
+
+        const frequency_area = {
+            '<10':0,
+            '10-15':0,
+            '15-20':0,
+            '20-30':0,
+            '30-40':0,
+            '40-50':0,
+            '50-60':0,
+            '60-70':0,
+            '70-80':0,
+            '80-90':0,
+            '90-110':0,
+            '110-130':0,
+            '>130':0
+        };
+
+        //统计各个面积区间的频率
+        areas.forEach(
+            function(strNum) {
+                // 将字符串转换为数字
+                const element = parseFloat(strNum);
+                if (element <= 10) {
+                    frequency_area['<10']++;
+                }else if (element > 10 && element <= 15) {
+                    frequency_area['10-15']++;
+                }else if (element > 15 && element <= 20) {
+                    frequency_area['15-20']++;
+                }else if (element > 20 && element <= 30) {
+                    frequency_area['20-30']++;
+                }else if (element > 30 && element <= 40) {
+                    frequency_area['30-40']++;
+                }else if (element > 40 && element <= 50) {
+                    frequency_area['40-50']++;
+                }else if (element > 50 && element <= 60) {
+                    frequency_area['50-60']++;
+                }else if (element > 60 && element <= 70) {
+                    frequency_area['60-70']++;
+                }else if (element > 70 && element <= 80) {
+                    frequency_area['70-80']++;
+                }else if (element > 80 && element <= 90) {
+                    frequency_area['80-90']++;
+                }else if (element > 90 && element <= 110) {
+                    frequency_area['90-110']++;
+                }else if (element > 110&& element <= 130) {
+                    frequency_area['110-130']++;
+                }else {
+                    frequency_area['>130']++;
+                }
+            }
+        )
+
+        // 将频率统计对象转换为数组
+        const frequencyArray = Object.keys(frequency_area).map(function (key) {
+            return frequency_area[key];
+        });
+
+        // 柱状图配置项
+        const barChartOptions = {
+            title: {
+                text: '房屋面积统计柱状图'
+            },
+            animationDuration: function (arg) {
+                console.log(arg)
+                return 400 * arg
+            },  //动画时长
+            dataZoom: [
+                {
+                    type: 'slider',  //滑轮缩放，inside：鼠标滚轮缩放
+                    xAxisIndex: 0  //指明x轴
+                },
+                {
+                    type: 'slider',
+                    yAxisIndex: 0
+                }
+            ],  //区域缩放
+            tooltip: {
+                trigger: 'axis',//触发类型
+                triggerOn: 'click',//触发时机
+                formatter: '面积在“{b}m²”区间内的房源有{c}套'//提示框内容
+            },  //提示框组件
+            toolbox: {
+                feature: {
+                    saveAsImage: {},  //导出下载图片
+                    dataView: {},  //数据原始视图
+                    restore: {}, //重置
+                    dataZoom: {},  //区域缩放
+                    magicType: {  //动态图表类型切换
+                        type: ['bar', 'line']
+                    }
+                }
+            },  //通用工具栏
+            xAxis: {
+                type: 'category',
+                name: '面积(m²)',
+                data: Object.keys(frequency_area),
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '数量(套)'
+            },
+            series: [
+                {
+                    data: Object.values(frequencyArray),
+                    type: 'bar',
+                    markPoint: {
+                        data: [
+                            {
+                                type: 'max'
+                            }, {
+                                type: 'min'
+                            }
+                        ]
+                    },  //标记点，最值
+                    label: {
+                        show: true,
+                        rotate: 20, //旋转
+                        position: 'top'  //显示位置
+                    },  //显示
+                    barWidth: '50%',
+                }
+            ]
+        };
+
+        // 饼图配置项
+        const pieChartOptions = {
+            title: {
+                text: '房屋面积统计饼图'
+            },
+            series: [
+                {
+                    type: 'pie',
+                    data: [
+                        { value: frequencyArray[0], name: '<10' },
+                        { value: frequencyArray[1], name: '10-15' },
+                        { value: frequencyArray[2], name: '15-20' },
+                        { value: frequencyArray[3], name: '20-30' },
+                        { value: frequencyArray[4], name: '30-40' },
+                        { value: frequencyArray[5], name: '40-50' },
+                        { value: frequencyArray[6], name: '50-60' },
+                        { value: frequencyArray[7], name: '60-70' },
+                        { value: frequencyArray[8], name: '70-80' },
+                        { value: frequencyArray[9], name: '80-90' },
+                        { value: frequencyArray[10], name: '90-110' },
+                        { value: frequencyArray[11], name: '110-130' },
+                        { value: frequencyArray[12], name: '>130' },
+                    ],
+                    label: {
+                        show: true,
+                        formatter: function (arg) {
+                            return '面积在“' + arg.name + 'm²”区间内的房源共计' + arg.value + '套\n' + arg.percent + '%'
+                        }
+                    }, // 显示数据
+                    selectedMode: 'single',  //选中效果
+                    selectedOffset: 10,  //选中偏离量
+                }
+            ]
+        }
+
+        barChart.setOption(barChartOptions);
+        pieChart.setOption(pieChartOptions);
+    </script>
+</body>
+</html>

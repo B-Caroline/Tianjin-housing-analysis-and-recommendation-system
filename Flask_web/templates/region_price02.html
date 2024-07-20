@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>地区与租金箱线图</title>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 柱状图容器 -->
+    <div id="barchart" style="width: 100%; height: 525px;"></div>
+    <script type="text/javascript">
+        const barChart = echarts.init(document.getElementById('barchart'));
+        let regions = {{ regions|tojson|safe }};
+        let prices = {{ prices|tojson|safe }};
+
+        // 转换成箱线图的数据格式
+        // 遍历regions数组
+        let boxplotData = [];
+        for (let i = 0; i < regions.length; i++) {
+            const region_array = regions[i];//取出单个值
+            const price_array = prices[i];
+            let found = false;
+
+            // 检查目标数组中是否已存在对应的分类
+            for (let j = 0; j < boxplotData.length; j++) {
+                if (boxplotData[j][0] === region_array) {
+                    // 如果已存在，则将值添加到对应的二维数组中
+                    boxplotData[j].push(price_array);
+                    found = true;
+                    break;
+                }
+            }
+            // 如果目标数组中不存在对应的分类，则创建一个新的二维数组
+            if (!found) {
+                boxplotData.push([region_array, price_array]);
+            }
+        }
+
+        // 遍历原始二维数组，提取 x 轴和 y 轴的数据
+        const xAxisData = [];
+        const seriesData = [];
+        for (let i = 0; i < boxplotData.length; i++) {
+            const subArray = boxplotData[i];
+            const firstItem = subArray[0]; // 首项作为 x 轴数据
+            const otherItems = subArray.slice(1); // 去除首项，其他项作为 y 轴数据
+            xAxisData.push(firstItem)
+            seriesData.push(otherItems);
+        }
+
+        //取最小值、最大值、25%中位线、75%中位线、中位线，组成新的二维数组
+        function calculateQuartiles(arr) {
+            arr.sort((a, b) => a - b);
+            const n = arr.length;
+            const quartile = (index) => {const i = (n - 1) * index;
+                const lower = Math.floor(i);
+                const upper = lower + 1;
+                const weight = i - lower;
+                return arr[lower] * (1 - weight) + arr[upper] * weight;
+            };
+            return [
+                arr[0], // 最小值
+                quartile(0.25), // 第一四分位数（25%分位数）
+                quartile(0.5), // 中位数（50%分位数
+                quartile(0.75), // 第三四分位数（75%分位数）
+                arr[n - 1] // 最大值
+            ];
+        }
+
+        const sortedArray = seriesData.map(calculateQuartiles);
+
+        const option = {
+            title: [
+                {
+                text: '地区与租金关系箱线图'
+                },
+                {
+                    text: 'Q1: 25%中位线 \nQ2: 75%中位线',
+                    borderColor: '#999',
+                    borderWidth: 1,
+                    left: '80%'
+                }
+            ],
+            tooltip: {
+                trigger: 'item',
+            },
+            xAxis: {
+                type: 'category',
+                name: '地区(区)',
+                data: xAxisData,
+            },
+            yAxis: {
+                type: 'value',
+                name: '租金(元)',
+                splitArea: {
+                    show: true
+                },
+            },
+            series: [{
+                name: '数据',
+                type: 'boxplot',
+                data: sortedArray
+            }]
+        }
+        barChart.setOption(option);
+    </script>
+</body>
+</html>

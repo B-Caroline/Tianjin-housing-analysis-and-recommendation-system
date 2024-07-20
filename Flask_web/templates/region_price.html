@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>地区房价</title>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+
+<body>
+    <!-- 散点图容器 -->
+    <div id="scatter chart" style="width: 100%; height: 500px;"></div>
+
+    <script type="text/javascript">
+        let regions = {{ regions|tojson|safe }};
+        let prices = {{ prices|tojson|safe }};
+
+        // 合并数组
+        const mergedData = {};
+        regions.forEach(
+            (location, index) => {
+                if (!mergedData[location]) {
+                mergedData[location] = [];
+                }
+                mergedData[location].push(prices[index]);
+            }
+        )
+
+        //组合成系列数组，每个对象代表一个系列（series）
+        const seriesData = Object.keys(mergedData).map(function (location) {
+            return {
+                name: location,
+                type: 'effectScatter',
+                data: mergedData[location].map(function (value) {
+                    return [location, value];
+                }),
+                showEffectOn: 'emphasis',  //触发时刻
+                rippleEffect: {
+                       scale: 5  //大小比例
+                },
+                symbolSize: 15,  //点大小
+                itemStyle: {
+                    color: 'red',
+                },  //点颜色
+            };
+        });
+
+        const scatterChart = echarts.init(document.getElementById('scatter chart'));
+        const option = {
+            title: {
+                text: '地区房价散点图'
+            },
+            tooltip: {
+                trigger: 'axis',  //提示框
+                triggerOn: 'click',//触发时机
+                axisPointer: {
+                    type: 'cross'
+                }  //准星指示器
+            },
+            label: {
+                show: true,
+                position: 'right'  //显示位置
+            },  //显示
+            xAxis: {
+               type: 'category',
+                name: '地区(区)',
+                data: Object.keys(mergedData)
+            },
+            yAxis: {
+                type: 'value',
+                name: '租金(元)',
+            },
+            series: seriesData,
+        }
+
+        scatterChart.setOption(option)
+    </script>
+</body>

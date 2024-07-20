@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>散点图</title>
+    <script src="../../static/js/echarts.min.js"></script>
+</head>
+<body>
+  <div style="width: 600px;height: 400px"></div>
+  <script>
+       const axisData = [[152, 63], [125, 85], [175, 74]];
+       console.log(axisData)
+       const myCharts = echarts.init(document.querySelector('div'));
+       const option = {
+           xAxis: {
+               type: 'value',
+               scale: true
+           },
+           yAxis: {
+               type: 'value',
+               scale: true
+           },
+           series: [
+               {
+                   type: 'effectScatter',  //涟漪动画
+                   showEffectOn: 'emphasis',  //触发时刻
+                   rippleEffect: {
+                       scale: 3  //大小比例
+                   },
+                   //type: 'scatter',
+                   data: axisData,
+                   symbolSize: function (arg){
+                       const height = arg[0] / 100
+                       const weight = arg[1]
+                       const bmi = weight / (height * height)
+                       if(bmi >28){
+                           return 20
+                       }
+                       return 5
+                   },  //不同点大小
+                   itemStyle: {
+                       color: function (arg){
+                           const h = arg[0] / 100
+                           const w = arg[1]
+                           const bmi = w / (h * h)
+                           if(bmi >28){
+                               return 'red'
+                           }
+                           return 'blue'
+                       }
+                   },  //不同点颜色
+               }
+           ]
+       }
+       myCharts.setOption(option)
+  </script>
+</body>
+</html>

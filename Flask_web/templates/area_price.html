@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>面积与租金统计</title>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 散点图容器 -->
+    <div id="scatter chart" style="width: 100%; height: 500px;"></div>
+    <script type="text/javascript">
+        let areas = {{ areas|tojson|safe }};
+        let prices = {{ prices|tojson|safe }};
+
+        // 合并数组
+        const mergedData = [];
+        for (let i = 0; i < areas.length; i++) {
+            mergedData.push([areas[i], prices[i]]);
+        }
+
+       const scatterChart = echarts.init(document.getElementById('scatter chart'));
+        const option = {
+            title: {
+                text: '房屋面积与租金散点图'
+            },
+            xAxis: {
+               type: 'value',
+               scale: true,
+               name: '面积 (m²)'
+           },
+            yAxis: {
+               type: 'value',
+               scale: true,
+               name: '租金(元)'
+           },
+            tooltip: {
+                trigger: 'axis',  //提示框
+                triggerOn: 'click',//触发时机
+                axisPointer: {
+                    type: 'cross'
+                },  //准星指示器
+                formatter: '面积与房屋租金分别为“{c}元”'//提示框内容
+            },
+            label: {
+                show: true,
+                position: 'right'  //显示位置
+            },  //显示
+            series: [
+               {
+                   type: 'effectScatter',  //涟漪动画
+                   showEffectOn: 'emphasis',  //触发时刻
+                   rippleEffect: {
+                       scale: 3
+                   },  //大小比例
+                   //type: 'scatter',
+                   data: mergedData,
+               }
+           ]
+        }
+       scatterChart.setOption(option)
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>房屋信息整体展示</title>
+    <link href="../static/css/menu_style.css" rel="stylesheet">
+</head>
+<body>
+<!-- ======= Header ======= -->
+    <div class="header w">
+        <!--logo部分-->
+        <div class="logo">
+            <img src="../static/img/course03.png" alt="">
+        </div>
+        <!--导航栏部分-->
+        <div class="nav">
+            <ul>
+                <li><a href="{{ url_for('menu') }}">主页</a></li>
+                <li><a href="{{ url_for('menu') }}">返回主页</a></li>
+            </ul>
+        </div>
+    </div><!-- End Header -->
+
+<!-- ======= Main Section ======= -->
+   <div class="banner2">
+       <div class="main-title2">
+                   <h2>房屋信息整体展示</h2>
+               </div>
+       <table class="styled-table">
+                   <thead class="thead">
+                         <tr>
+                             <td>房屋简介</td>
+                             <td>地区</td>
+                             <td>详细地址</td>
+                             <td>房型</td>
+                             <td>面积(m²)</td>
+                             <td>楼层</td>
+                             <td>朝向</td>
+                             <td>租金(元)</td>
+                             <td>供暖类型</td>
+                             <td>租赁方式</td>
+                         </tr>
+                   </thead>
+                   <tbody>
+                   {% for house in houses%}
+                             <tr>
+                                 <td>{{ house[0] }}</td>
+                                 <td>{{ house[1] }}</td>
+                                 <td>{{ house[2] }}</td>
+                                 <td>{{ house[3] }}</td>
+                                 <td>{{ house[4] }}m²</td>
+                                 <td>{{ house[5] }}</td>
+                                 <td>{{ house[6] }}</td>
+                                 <td>{{ house[7] }}元</td>
+                                 <td>{{ house[8] }}</td>
+                                 <td>{{ house[9] }}</td>
+                                 <td>{{ house[10] }}</td>
+                                 <td>{{ house[11] }}</td>
+                             </tr>
+                   {% endfor %}
+                   </tbody>
+                </table>
+   </div><!-- End Section -->
+
+</body>
+</html>
